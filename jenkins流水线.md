@@ -22,7 +22,7 @@ Jenkins是目前我们实现CI(Continuous Integration)而使用的一款开源�
 ![](https://jenkins.io/images/pipeline/realworld-pipeline-flow.png)
 
 ## 目前我们的CI流水线示意图
-![](TODO)
+![](images/jenkins-workflow.svg)
 
 如上图所示，是我们目前采用的CI流程示意。大致描述一下完整的流水线:
 
