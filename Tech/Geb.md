@@ -1,20 +1,28 @@
 
 ***
 #Geb测试分享
-###**Geb的简介**
-* Geb是浏览器自动化(browser automation)的解决方案。
-* Geb可以用来做Web的自动化测试功能测试（Functional Testing）和验收测试(User Acceptance Testing)并生成网站截图的快照 
-* Geb的优点:易学易懂易用,高度整合现有的测试框架，可以搭配 Grails,Gradle,Maven,Jenkins等等,Geb支持很多核心浏览器,更方便的获取网页组件等等 
-* Geb测试的环境要求:JDK7以上,Groovy2.3以上,Firdfox33以上 
+###**Geb简介**
+Geb是浏览器自动化(browser automation)的解决方案, 以强大的Selenium WebDriver作为基础，直接控制浏览器进行网站操作，可以用来做Web的自动化测试 ，功能测试（Functional Testing）和验收测试(User Acceptance Testing)并生成网站截图的快照 ，它具有以下优点：
+* 易学易懂易用,
+* 高度整合现有的测试框架如：Junit,Spock,TestNG等等，
+* 可以搭配 Grails,Gradle,Maven,Jenkins等等使用,
+* Geb支持很多核心浏览器如：Firefox,PhantomJS,Chrome,Internet Explorer,等
+* 更方便的获取网页组件 
 
-###**Geb与WebDriver**
+
+###**认识Geb与WebDriver**
+Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。WebDriver架构及其原理如下：
 * webdriver是按照server – client的经典设计模式设计的.
 * server端就是remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待client发送请求并做出响应.
 * client端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的url等操作是以http请求的方式发送给被测试浏览器，也就是remote server；remote server接受请求，并执行相应操作，并在response中返回执行状态、返回值等信息。
-* Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。
+
 
 ###**Geb测试代码完整案例与解析**
- 在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例
+ 在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例，要求：
+ * JDK7以上
+ * Groovy2.3以上
+ * Firefox3.3以上
+ 
 #####Grails的BuildConfig.groovy配置
 ```
 def gebVersion = "0.13.1"
@@ -109,7 +117,7 @@ grails -Dgrails.env=geb test-app functional:
 ```
 
 ###Geb测试异常及解决思路总结
-
+以下是自己在开发过程中出现的部分异常，并进行了解决与总结
 
  ``` 
  geb.error.SingleElementNavigatorOnlyMethodException: Method click()
@@ -148,9 +156,9 @@ Element is not currently visible and may not be manipulated exception  #11637
 
   **The solution**
 
- 1. 元素不可见时不可以操作，可能的原因是元素本身是不可见的，还有就是页面js或者ajax延迟加载隐藏元素还没有加载出来，要在触发js或者ajax后让浏览器等待服务器响应一定的时间后再进行操作
+ 1. 元素不可见时不可以操作，可能的原因是元素本身是不可见的，还有就是页面js或者ajax延迟加载隐藏元素还没有加载出来，要在触发js或者ajax后让浏览器等待服务器响应一定的时间后再进行操作，可以这样：Thread.sleep(3000)
  2. 如果截图上已经可见隐藏元素显示出来，还报出些错，这个跟浏览器窗口大小有关系，一般配置好了，这个问题就可能会避免
- 3. 页面的js或者ajax没有被触发，原因也很多比如浏览器的js不兼容，触发不了，这时要修改js,还有定位的元素不够精准，范围太大
+ 3. 页面的js或者ajax没有被触发，原因也很多比如浏览器的js不兼容，触发不了，这时要修改js,此外定位的元素不够精准，范围太大也会触发不了js
 
     
 
@@ -165,7 +173,7 @@ java.lang.AssertionError: no browser confirm() was raised
 
 **The solution**
 
- 1. 这个是在弹出confrim 或者alert时容易报的错，主要原因还是元素定位不准确，比如现在用的phantomJS对元素的定位就要精准，尽量定位到时a标签或者button上click()，定位元素范围要小
+ 1. 这个是在弹出confrim 或者alert时容易报的错，主要原因还是元素定位不准确，比如现在用的phantomJS对元素的定位就要精准，尽量定位到时a标签或者button上click()，定位元素时一定要定到最内层标签
 
 ----------
 
@@ -180,7 +188,7 @@ geb.waiting.WaitTimeoutException: condition did not pass in 60.0
 **The solution**
 
 1. 等待超时，可以延长一下等待时间，同时当前的运行环境，服务器的响应速度对Geb测试也有很大的影响，程序执行的快，而响应的时间长就会超时，所有只能估计一个大概等待时间
-2. 自己本身的错误，错误的页面跳转
+2. 自己本身的错误，如错误的页面跳转
 
 ----------
 
