@@ -2,16 +2,19 @@
 ***
 #Geb测试分享
 ###**Geb的简介**
-*   Geb是浏览器自动化(browser automation)的解决方案。
-*   Geb可以用来做Web的自动化测试功能测试（Functional Testing）和验收测试(User Acceptance Testing)并生成网站截图的快照 
-*   Geb的优点:易学易懂易用,高度整合现有的测试框架，可以搭配 Grails,Gradle,Maven,Jenkins等等,Geb支持很多核心浏览器,更方便的获取网页组件等等 
+* Geb是浏览器自动化(browser automation)的解决方案。
+* Geb可以用来做Web的自动化测试功能测试（Functional Testing）和验收测试(User Acceptance Testing)并生成网站截图的快照 
+* Geb的优点:易学易懂易用,高度整合现有的测试框架，可以搭配 Grails,Gradle,Maven,Jenkins等等,Geb支持很多核心浏览器,更方便的获取网页组件等等 
 * Geb测试的环境要求:JDK7以上,Groovy2.3以上,Firdfox33以上 
 
 ###**Geb与WebDriver**
-   webdriver是按照server – client的经典设计模式设计的,server端就是remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待client发送请求并做出响应;client端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的url等操作是以http请求的方式发送给被测试浏览器，也就是remote server；remote server接受请求，并执行相应操作，并在response中返回执行状态、返回值等信息。另外，Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。
+* webdriver是按照server – client的经典设计模式设计的.
+* server端就是remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待client发送请求并做出响应.
+* client端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的url等操作是以http请求的方式发送给被测试浏览器，也就是remote server；remote server接受请求，并执行相应操作，并在response中返回执行状态、返回值等信息。
+* Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。
 
 ###**Geb测试代码完整案例与解析**
- **在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例**
+ 在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例
 #####Grails的BuildConfig.groovy配置
 ```
 def gebVersion = "0.13.1"
@@ -30,14 +33,13 @@ dependencies {
 #####Geb中GebConfig.groovy的配置
 ```
 import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.firefox.FirefoxProfile
-import org.openqa.selenium.phantomjs.PhantomJSDriver
-driver = {
-        FirefoxProfile profile = new FirefoxProfile()
+import org.openqa.selenium.firefox.FirefoxProfile
+driver = {
+        FirdfoxProfile profile = new FirefoxProfile()
         profile.setPreference("intl.accept_languages", "en-us")
-	     def driverInstance = new FirefoxDriver(profile)
-	     driverInstance.manage().window().maximize()
-	     driverInstance
+        def driverInstance = new FirefoxDriver(profile)
+        driverInstance.manage().window().maximize()
+        driverInstance
 }
 baseUrl = 'http://127.0.0.1:8080/aircare/'
 baseNavigatorWaiting = true
@@ -60,7 +62,7 @@ autoClearCookies = true
  
      }
      
-     def login(String phoneNum ,String pwd){
+    def login(String phoneNum ,String pwd){
          loginName.value(phoneNum)
          loginPwd.value(pwd)
          loginButton.click()
@@ -69,7 +71,7 @@ autoClearCookies = true
      }
  
  ```
- 范例说明：先定义一个LoginPage页面，用来在测试环境启动好后，浏览器根据测试代码打开这个LoginPage页面，而在这个页面上是用jQuery对涉及到测试的页面元素进行获取，也可以自定义一些登录方法去便于复用（以上，login(String phoneNum,String pwd)是自定义登录方法）。Geb在page页面定义了三个很重要的静态属性，如下:
+ **范例说明：**先定义一个LoginPage页面，用来在测试环境启动好后，浏览器根据测试代码打开这个LoginPage页面，而在这个页面上是用jQuery对涉及到测试的页面元素进行获取，也可以自定义一些登录方法去便于复用（以上，login(String phoneNum,String pwd)是自定义登录方法）。Geb在page页面定义了三个很重要的静态属性，如下:
    1. url: 表示页面要跳转的地址或者网址（如果配置了baseUrl则page页面要写成相对路径）
    2. at: 判断跳转的页面是否在自己所希望的这个页面上
    3. content: 表示page包含的内容（获取的页面元素）
@@ -90,7 +92,7 @@ autoClearCookies = true
         waitFor{at LandingPage}
      }
 ```
-范例说明：when then 是geb测试的基本格式要配对使用，when里面可以写一些操作比如点击按钮，填写表单，获取元素的值等，then 里面可以写一些条件判断，对于when里一些操作之后期望达到的结果作出断言，也有一些很重要的语法要了解如下：
+**范例说明：**when then 是geb测试的基本格式要配对使用，when里面可以写一些操作比如点击按钮，填写表单，获取元素的值等，then 里面可以写一些条件判断，对于when里一些操作之后期望达到的结果作出断言，也有一些很重要的语法要了解如下：
 
 1. to: 表示让浏览器去到哪个page页面
 2. go: 和to表达的意思相同，只是go 要接收一个字符行式的url 比如：go 'www.baidu.com'
@@ -109,11 +111,13 @@ grails -Dgrails.env=geb test-app functional:
 ###Geb测试异常及解决思路总结
 
 
- ``` geb.error.SingleElementNavigatorOnlyMethodException: Method click()
+ ``` 
+ geb.error.SingleElementNavigatorOnlyMethodException: Method click()
  can only be called on single element navigators but it was called on a
  navigator with size 2. Please use the spread operator to call this
  method on all elements of this navigator or change the selector used
- to create this navigator to only match a single element. ```
+ to create this navigator to only match a single element. 
+ ```
 
  
  **The solution**
@@ -168,8 +172,10 @@ java.lang.AssertionError: no browser confirm() was raised
 
   
 
-```  geb.waiting.WaitTimeoutException: condition did not pass in 60.0   
- seconds. Failed with exception: - See more at: ```
+```  
+geb.waiting.WaitTimeoutException: condition did not pass in 60.0   
+ seconds. Failed with exception: - See more at: 
+ ```
 
 **The solution**
 
@@ -181,8 +187,10 @@ java.lang.AssertionError: no browser confirm() was raised
 
  
 
-```  [INFO  - 2016-05-26T09:46:48.760Z] SessionManagerReqHand -   
- _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW ```
+```  
+[INFO  - 2016-05-26T09:46:48.760Z] SessionManagerReqHand -   
+ _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW 
+ ```
 
 **The solution**
 
