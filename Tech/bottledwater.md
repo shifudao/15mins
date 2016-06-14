@@ -33,9 +33,13 @@ Bottled Water就是模拟数据库主从复制的过程，将数据库的变化�
 
 其中，这个过程使用了postgresql 9.4版本引入的新特性[logical decoding](https://www.postgresql.org/docs/9.5/static/logicaldecoding.html)，可以从一个数据库中提取出consistent snapshot和连续的change events流，提取出的数据按照行级别推送至kafka中。默认情况下，会在kafka中对每个表创建一个同名topic，以存储change events。
 
+> 有关逻辑解码(logical decoding)的概念和过程描述，可以参考postgresql的文档: http://www.postgres.cn/docs/9.4/logicaldecoding-explanation.html
+
 Bottled Water项目在使用中包含了两个部分:
 - postgresql的扩展bottledwater。
-- 一个可执行程序bottledwater，负责从postgresql中将变更内容推送至kafka中。
+- 一个可执行程序`bottledwater`，负责从postgresql中将变更内容推送至kafka中。
+
+`bottledwater`这个可执行程序在启动时会创建一个名为`bottledwater`的复制槽(通过命令行参数可修改复制槽的名字，复制槽如果已存在就不会新建)，以存储数据库的更改，并且追踪已消耗的`diff`。由于复制槽会保留最后被消耗掉的`diff`位置，因此，即使bottledwater正常或异常退出，也不会丢失数据库的`diff`追踪，下次启动会接着上次的break point继续执行。由于复制槽本身不保留消费者的状态，每个消费者只能得到最后一个消费者停止消费之后的修改，所以特别注意不要启动多个bottledwater连接同一个复制槽。
 
 ## Bottled Water使用方法
 
@@ -160,5 +164,13 @@ DELETE FROM test WHERE id = 2;
 - delete操作，message value将会是null
 - 如果表没有主键，Bottled Water将不会处理此表。可以通过`--allow-unkeyed`参数强行使用
 
+最后，只需要使用一个kafka consumer连接kafka就可以实时获取到数据库表的变更了。
+
 ## 总结
-Bottled Water总体来说使用还是很方便的，并且响应速度十分灵敏。并且即使停掉bottledwater进程，下次启动时也会继续上次的断点，不会丢失数据。
+Bottled Water总体来说使用还是很方便的，并且响应速度十分灵敏。即使停掉bottledwater进程，下次启动时也会继续上次的断点，不会丢失数据。需要使用postgresql与kafka结合方案的可以考虑。
+
+## 参考资料
+- [Bottled Water: Real-time integration of PostgreSQL and Kafka](http://www.confluent.io/blog/bottled-water-real-time-integration-of-postgresql-and-kafka/)
+- [bottledwater-pg README](https://github.com/confluentinc/bottledwater-pg/blob/master/README.md)
+- [Streaming Replication - PostgreSQL wiki](https://wiki.postgresql.org/wiki/Streaming_Replication)
+- [postgresql文档: 章 46. 逻辑解码](http://www.postgres.cn/docs/9.4/logicaldecoding.html)
