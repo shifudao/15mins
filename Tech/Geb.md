@@ -1,7 +1,7 @@
 
 ***
 #Geb测试分享
-###**Geb简介**
+###Geb简介
 Geb是浏览器自动化(browser automation)的解决方案, 以强大的Selenium WebDriver作为基础，直接控制浏览器进行网站操作，可以用来做Web的自动化测试 ，功能测试（Functional Testing）和验收测试(User Acceptance Testing)并生成网站截图的快照 ，它具有以下优点：
 * 易学易懂易用,
 * 高度整合现有的测试框架如：Junit,Spock,TestNG等等，
@@ -10,18 +10,23 @@ Geb是浏览器自动化(browser automation)的解决方案, 以强大的Seleniu
 * 更方便的获取网页组件 
 
 
-###**认识Geb与WebDriver**
+###认识Geb与WebDriver
 Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。WebDriver架构及其原理如下：
 * webdriver是按照server – client的经典设计模式设计的.
 * server端就是remote server，可以是任意的浏览器。当我们的脚本启动浏览器后，该浏览器就是remote server，它的职责就是等待client发送请求并做出响应.
 * client端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的url等操作是以http请求的方式发送给被测试浏览器，也就是remote server；remote server接受请求，并执行相应操作，并在response中返回执行状态、返回值等信息。
 
 
-###**Geb测试代码完整案例与解析**
+###Geb测试代码完整案例与解析
  在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例，要求：
  * JDK7以上
  * Groovy2.3以上
  * Firefox3.3以上
+ 
+测试前的配置
+
+* Grails中对BuildConfig.groovy的配置
+* GebConfig的配置
  
 #####Grails的BuildConfig.groovy配置
 ```
@@ -54,7 +59,7 @@ baseNavigatorWaiting = true
 atCheckWaiting = true
 autoClearCookies = true
 ```
-#####代码
+#####测试代码
 ```
 //page页面  
  class LoginPage extends Page {
@@ -211,3 +216,5 @@ def setupSpec(){
           new WebDriverWait(driver,30000)  
     }  
 ```
+###参考资料
+* [http://www.gebish.org/manual/current/] ( http://www.gebish.org/manual/current/ )
