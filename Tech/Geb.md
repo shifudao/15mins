@@ -121,7 +121,7 @@ grails test-app functional:
 grails -Dgrails.env=geb test-app functional:
 ```
 
-###Geb测试异常及解决思路总结
+###Geb测试异常及解决思路
 以下是自己在开发过程中出现的部分异常，并进行了解决与总结
 
  ``` 
@@ -216,5 +216,7 @@ def setupSpec(){
           new WebDriverWait(driver,30000)  
     }  
 ```
+###总结
+用Geb做测试还是比较快捷的，也是目前最流行的自动化测试工具，不用考虑程序本身的逻辑问题，就可以轻松测试并生成网站截图，相对于项目中一些复杂的单元测试和集成测试还是要容易很多，唯一的缺点就是，对程序运行环境的要求较高，维护成本也较高，对于页面Ui的测试和复杂的功能不妨可以使用Geb来做测试。
 ###参考资料
 * [http://www.gebish.org/manual/current/] ( http://www.gebish.org/manual/current/ )
