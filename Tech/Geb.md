@@ -17,7 +17,7 @@ Geb是构建在WebDriver之上，Geb测试也可以参考WebDriver API。WebDriv
 * client端简单说来就是我们的测试代码，我们测试代码中的一些行为，比如打开浏览器，转跳到特定的url等操作是以http请求的方式发送给被测试浏览器，也就是remote server；remote server接受请求，并执行相应操作，并在response中返回执行状态、返回值等信息。
 
 
-###Geb测试代码完整案例与解析
+###Geb测试完整案例与解析
  在这里以Grails框架和Firefox做Geb测试，以用户登录功能为例，要求：
  * JDK7以上
  * Groovy2.3以上
@@ -178,7 +178,7 @@ java.lang.AssertionError: no browser confirm() was raised
 
 **The solution**
 
- 1. 这个是在弹出confrim 或者alert时容易报的错，主要原因还是元素定位不准确，比如现在用的phantomJS对元素的定位就要精准，尽量定位到时a标签或者button上click()，定位元素时一定要定到最内层标签
+ 1. 这个是在弹出confrim 或者alert时容易报的错，主要原因还是元素定位不准确，比如现在用的phantomJS对元素的定位就要精准，尽量定位到时a标签或者button上click()，定位元素时最好要定到最内层标签
 
 ----------
 
