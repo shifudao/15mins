@@ -61,3 +61,111 @@ DNS常见的记录类型如下:
 * `CNAME`优先级比`A`低。`CNAME`存储的不是IP记录，而是另一个域名。因此，CNAME需要经过多次解析才能得到真正的目标IP地址。
 * `SRV`记录定义于RFC 2782标准。用于定义提供特定服务的服务器的位置，如主机（hostname），端口（port number）等。
 * 泛解析: 将`*.domain.com`的`A记录`解析到某个IP上。则`domain.com`下的二级域名都将解析到这个IP上。
+
+## DNS查询演示
+使用命令行工具`dig`做演示，其他dns lookup工具(如: nslookup, host等)同样可以查到类似的结果。
+
+比如查看`www.baidu.com`的解析记录，使用`dig www.baidu.com`即可。dig默认请求的是`A`记录解析，如果想看到域名的实际解析记录，可以使用`dig www.baidu.com any`。已经省略无关紧要的输出:
+
+```bash
+$ dig www.baidu.com
+;; QUESTION SECTION:
+;www.baidu.com.         IN  A
+
+;; ANSWER SECTION:
+www.baidu.com.      262 IN  A   180.97.33.108
+www.baidu.com.      262 IN  A   180.97.33.107
+```
+
+可以看到`www.baidu.com.`这个域名返回的是一个`A记录`，有两个解析结果。再次运行同样的命令，会发现被轮询了，返回的A记录的IP顺序变了。
+
+```bash
+;; QUESTION SECTION:
+;www.baidu.com.         IN  A
+
+;; ANSWER SECTION:
+www.baidu.com.      65  IN  A   180.97.33.107
+www.baidu.com.      65  IN  A   180.97.33.108
+```
+
+反复运行可以发现，每次返回的IP都是轮询顺序的。
+
+如果要查询`CNAME`解析，用`dig`的话需要跟上解析记录参数，`any`代表任何类型，否则就是`a`。
+
+```bash
+$ dig img.alicdn.com
+;; QUESTION SECTION:
+;img.alicdn.com.            IN  ANY
+
+;; ANSWER SECTION:
+img.alicdn.com.     15752   IN  CNAME   img.alicdn.com.danuoyi.alicdn.com.
+```
+
+用`host`命令可以看到访问这个域名的详细请求过程:
+
+```bash
+$ host img.alicdn.com
+img.alicdn.com has address 180.97.245.110
+img.alicdn.com has address 180.97.159.242
+img.alicdn.com has address 180.97.245.109
+img.alicdn.com has address 180.97.159.243
+img.alicdn.com has address 58.220.27.86
+img.alicdn.com has address 58.218.215.120
+img.alicdn.com has address 58.218.215.110
+img.alicdn.com has address 58.220.27.85
+img.alicdn.com is an alias for img.alicdn.com.danuoyi.alicdn.com.
+img.alicdn.com is an alias for img.alicdn.com.danuoyi.alicdn.com.
+```
+
+```bash
+$ dig 163.com any
+;; QUESTION SECTION:
+;163.com.           IN  ANY
+
+;; ANSWER SECTION:
+163.com.        163 IN  A   123.58.180.8
+163.com.        163 IN  A   123.58.180.7
+163.com.        163 IN  TXT "v=spf1 include:spf.163.com -all"
+163.com.        163 IN  MX  10 163mx02.mxmail.netease.com.
+163.com.        163 IN  MX  10 163mx03.mxmail.netease.com.
+163.com.        163 IN  MX  50 163mx00.mxmail.netease.com.
+163.com.        163 IN  MX  10 163mx01.mxmail.netease.com.
+163.com.        163 IN  NS  ns8.nease.net.
+163.com.        163 IN  NS  ns2.nease.net.
+163.com.        163 IN  NS  ns1.nease.net.
+163.com.        163 IN  NS  ns4.nease.net.
+163.com.        163 IN  NS  ns3.nease.net.
+163.com.        163 IN  NS  ns5.nease.net.
+163.com.        163 IN  NS  ns6.nease.net.
+```
+
+```bash
+$ host 163.com
+163.com has address 123.58.180.8
+163.com has address 123.58.180.7
+163.com mail is handled by 10 163mx01.mxmail.netease.com.
+163.com mail is handled by 50 163mx00.mxmail.netease.com.
+163.com mail is handled by 10 163mx02.mxmail.netease.com.
+163.com mail is handled by 10 163mx03.mxmail.netease.com.
+```
+
+只要要有`NS`记录才能使用域名邮箱(`@163.com`这样的邮箱)
+
+暴露在互联网的域名解析服务中，`SRV`记录较为少见，因为这样会暴露服务的端口，带来安全隐患。但`SRV`记录在微服务架构中极为便利。
+
+```bash
+$ dig @172.16.250.10 -p 8600 consul.service.consul SRV
+;consul.service.consul.     IN  SRV
+
+;; ANSWER SECTION:
+consul.service.consul.  0   IN  SRV 1 1 8300 rtdstest.node.sinoiot-test-dc1.consul.
+consul.service.consul.  0   IN  SRV 1 1 8300 rtdstest3.node.sinoiot-test-dc1.consul.
+consul.service.consul.  0   IN  SRV 1 1 8300 rtdstest2.node.sinoiot-test-dc1.consul.
+
+;; ADDITIONAL SECTION:
+rtdstest.node.sinoiot-test-dc1.consul. 0 IN A   172.16.250.10
+rtdstest3.node.sinoiot-test-dc1.consul. 0 IN A  172.16.250.14
+rtdstest2.node.sinoiot-test-dc1.consul. 0 IN A  172.16.250.13
+```
+
+可以看到`SRV`记录不但会返回像`A记录`那样的IP地址，还会返回其他记录中均不会出现的端口号。可以说，通过`SRV`解析记录，可以得知哪些服务器上提供哪些服务，这些服务暴露的端口号是什么。大大减轻了维护成本。
