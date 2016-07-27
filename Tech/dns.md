@@ -93,7 +93,7 @@ www.baidu.com.      65  IN  A   180.97.33.108
 如果要查询`CNAME`解析，用`dig`的话需要跟上解析记录参数，`any`代表任何类型，否则就是`a`。
 
 ```bash
-$ dig img.alicdn.com
+$ dig img.alicdn.com any
 ;; QUESTION SECTION:
 ;img.alicdn.com.            IN  ANY
 
