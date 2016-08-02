@@ -139,6 +139,8 @@ HBase中的数据表示:
 
 Client会先去连接Zookeeper(0.9以前的老版本需要手工指定Master，新版本推荐连接zookeeper)，以确定Master节点信息，通过Master节点，找到需要的Region存储在哪些RegionServer上，最终向RegionServer发起请求，拿到需要的数据。> 关于HBase几个优化的设计，参考HBase官方文档: http://hbase.apache.org/book.html#schema
 
+> **注意**: Hadoop组件(HDFS，Yarn)以及运行在Hadoop平台之上的程序(如HBase，Hive等)，通信的时候依赖于域名，并非IP。尽管你可以在配置文件中写Zookeeper和HDFS的节点IP，但是要注意这并不够，日志中会打印很多无法解析对方主机名的异常。因此，你的基础设施中需要有DNS，将FQDN解析。当然，也可以写`hosts`文件，解析通信主机的主机名，用于没有内部DNS的环境中。
+
 ## HBase数据操作
 HBase对数据的操作主要有以下几种方法:
 
