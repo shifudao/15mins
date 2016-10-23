@@ -187,7 +187,7 @@ $ bin/hadoop jar wc.jar WordCount /user/joe/wordcount/input /user/joe/wordcount/
 ## 几个常见的优化点
 1. 启用map的输出压缩
 2. 控制map过程处理的数据量，不宜太小，也不宜太大
-3. 合理使用combine(相当于map级别的reduce)
+3. 合理使用combiner(相当于map级别的reduce)
 
 ## 小结
 Hadoop MapReduce框架总体上来说使用比较简单，但需要理解这个处理过程，明白整个数据流经过了怎样的转换过程。
